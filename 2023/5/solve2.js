@@ -39,6 +39,7 @@ rl
                 n = map ? map.dest + (n - map.src) : n
             })
             if (answer === -1 || answer > n) answer = n
+            return n
         }
         
         // console.log(stages[2].data)
@@ -59,15 +60,20 @@ rl
             const begin = seeds[2*i]
             const end = seeds[2*i] + seeds[2*i + 1]
 
-            const relevant = [begin, ...interestingSeeds.filter(s => begin <= s && s < end)]
-            console.log({relevant})
-            console.log(stages[0].data)
-            return
+            for (let n = begin; n < end; n++) {
+                if (n%1000000 === 0) console.log(n, answer)
+                check(n)
+            }
+
+            // const relevant = [begin, ...interestingSeeds.filter(s => begin <= s && s < end)]
+            // console.log({relevant})
+            // console.log(stages[0].data)
             
 
-            relevant.forEach(n => {
-                console.log('candidate', n)
-            })
+            // relevant.forEach(n => {
+            //     console.log('candidate', n)
+            //     console.log(check(n))
+            // })
         }
         
 
