@@ -8,18 +8,9 @@ function readInput() {
   return readFile('test1.txt', 'utf8')
 }
 
-let answer = 0
 let rows = []
 
 const delay = async (ms = 100) => { await new Promise(r => setTimeout(r, ms)) }
-
-// const genString = (matter, filler) => {
-//   const flat = []
-//   matter.forEach((m, i) => flat.push(filler[i], m))
-//   flat.push(filler[filler.length - 1])
-
-//   return flat.map((part, i) => i%2 ? Array.from(Array(part)).fill('#').join('') : Array.from(Array(part)).fill('.').join('')).join('')
-// }
 
 const genString = (arr) => {
   return arr.map((part, i) => i%2 ? Array.from(Array(part)).fill('#').join('') : Array.from(Array(part)).fill('.').join('')).join('')
@@ -59,9 +50,10 @@ readInput().then(async data => {
   }
 
   /* solve task */
-  let checked = []
+  let checked = {}
 
   console.time('duration')
+  let answer = 0
 
   rows.forEach(row => {
     const len = row.field.length
@@ -74,8 +66,8 @@ readInput().then(async data => {
     function rec (surplus, buckets, arr) {
       if (surplus === 0) {
         const str = genString(arr)
-        if (!checked.includes(str)) {
-          checked.push(str)
+        if (!checked[str]) {
+          checked[str] = 1
           return checkString(str, row.field) ? 1 : 0
         }
         return 0
@@ -84,13 +76,13 @@ readInput().then(async data => {
       let works = 0
       for (let i = 0; i < buckets/2; i++) {
         const newArr = [...arr]
-        newArr.splice(2*i, 1, newArr[2*i] + 1)
+        newArr[2*i] += 1
         works += rec(surplus - 1, buckets, newArr)
       }
       return works
     }
 
-    checked = []
+    checked = {}
     const debug = rec(leftover, init.length, init)
     answer += debug
     console.log(debug, row.field)

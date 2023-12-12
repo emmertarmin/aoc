@@ -5,7 +5,7 @@ const util = require('util')
 const readFile = util.promisify(fs.readFile)
 
 function readInput() {
-  return readFile('test1.txt', 'utf8')
+  return readFile('input.txt', 'utf8')
 }
 
 let answer = 0
