@@ -1,6 +1,5 @@
 const fs = require('fs')
 const util = require('util')
-const { strict } = require('assert')
 
 // Convert fs.readFile into Promise version of same
 const readFile = util.promisify(fs.readFile)
@@ -71,17 +70,12 @@ readInput().then(async data => {
     let str2 = str.split('')
     str2.splice(i, 1, '.')
 
-    // if (str.length < 200) {
-      const id = str + nums.join('-')
-      if (cache[id]) {
-        return cache[id]
-      } else {
-        cache[id] = rec({str: str1.join(''), nums}) + rec({str: str2.join(''), nums})
-        return cache[id]
-      }
-    // }
+    const id = str + nums.join('-')
+    if (cache[id]) return cache[id]
 
-    return rec({str: str1.join(''), nums}) + rec({str: str2.join(''), nums})
+    const aggr = rec({str: str1.join(''), nums}) + rec({str: str2.join(''), nums})
+    cache[id] = aggr
+    return aggr
   }
 
   rows.slice(0, 10).forEach(row => {
