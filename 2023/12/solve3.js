@@ -56,7 +56,7 @@ readInput().then(async data => {
     return nums.length === islands.length && nums.reduce((acc, curr, i) => acc && curr === islands[i], true)
   }
 
-  const cache = {}
+  let cache = {}
 
   const rec = (str, nums) => {
     str = clean(str)
@@ -99,9 +99,10 @@ readInput().then(async data => {
     const solution = rec(row.field, row.nums)
     answer += solution
     console.timeEnd(index)
+    console.log('cache size', Object.keys(cache).length)
+    cache = {}
   })
 
-  console.log('cache size', Object.keys(cache).length)
 
   console.log('answer', answer, {'test 1': answer === 21}, {'prod 1': answer === 7204}, {'test 2': answer === 525152}, {'prod 2': answer === 1672318386674})
 
