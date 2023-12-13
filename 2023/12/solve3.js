@@ -14,6 +14,14 @@ const delay = async (ms = 100) => { await new Promise(r => setTimeout(r, ms)) }
 
 const sum = (arr) => arr.reduce((acc, curr) => acc + curr, 0)
 
+const clean = (str) => {
+  while (str.indexOf('00') > -1) {
+    str = str.replace('00', '0')
+  }
+  if (str.startsWith('0')) str = str.substring(1)
+  if (str.endsWith('0')) str = str.substring(0, str.length - 1)
+  return str
+}
 
 /* Can't use `await` outside of an async function so you need to chain with then() */
 readInput().then(async data => {
@@ -24,10 +32,10 @@ readInput().then(async data => {
     const med = line.match(/([#\?\.]+) ([\d,]+)/)
     if (med.length === 0) continue
     const nums = med[2].split(',').map(n => Number(n))
-    const field = med[1]
+    const field = med[1].split('').map(ch => ({'.': 0, '#': 1, '?': 2}[ch])).join('')
     const multiplier = 5
     rows.push({
-      field: Array.from(Array(multiplier)).fill(field).join('?'),
+      field: Array.from(Array(multiplier)).fill(field).join('2'),
       nums: Array.from(Array(multiplier)).fill(nums).reduce((acc, curr) => [...acc, ...curr], [])
     })
   }
@@ -38,57 +46,64 @@ readInput().then(async data => {
 
   const checkCache = {}
 
-  const check = ({str, nums}) => {
-    const islands = checkCache[str] || Array.from(str.matchAll(/([#]+)/g)).map(group => group[0].length)
-    if (!checkCache[str]) checkCache[str] = islands
+  const check = (str, nums) => {
+    const id = parseInt(str, 3)
+    let islands = checkCache[id] || null
+    if (!islands) {
+      islands = Array.from(str.matchAll(/([1]+)/g)).map(group => group[0].length)
+      checkCache[id] = islands
+    }
     return nums.length === islands.length && nums.reduce((acc, curr, i) => acc && curr === islands[i], true)
   }
 
   const cache = {}
 
-  const rec = ({str, nums}) => {
-    while (str.includes('..')) {
-      str = str.replace('..', '.')
-    }
-    if (str.startsWith('.#')) str = str.substring(1)
-    if (str.endsWith('#.')) str = str.substring(0, str.length - 1)
-    if (str.endsWith('?.')) str = str.substring(0, str.length - 1)
-    const simplify = str.match(/^(\.*#+\.+)(#.*)/)
+  const rec = (str, nums) => {
+    str = clean(str)
+    const simplify = str.match(/^0*(1+)0(1.*)0*/)
     if (simplify?.[1]?.length > 0 && simplify?.[2]?.length > 0) {
-      if (!check({str: simplify[1], nums: [nums[0]]})) return 0
+      if (!check(simplify[1], [nums[0]])) return 0
       str = simplify[2]
       nums = nums.slice(1)
     }
 
-    if (!str.includes('?')) { // stop condition
-      return check({str, nums}) ? 1 : 0
+    if (!str.includes('2')) { // stop condition
+      return check(str, nums) ? 1 : 0
     }
 
-    const i = str.indexOf('?')
+    const i = str.indexOf('2')
     let str1 = str.split('')
-    str1.splice(i, 1, '#')
+    if (i === 0 || i === str1.length - 1) {
+      str1.splice(i, 1)
+    } else {
+      str1.splice(i, 1, '0')
+    }
+    str1 = str1.join('')
     let str2 = str.split('')
-    str2.splice(i, 1, '.')
+    str2.splice(i, 1, '1')
+    str2 = str2.join('')
+    
 
-    const id = str + nums.join('-')
-    if (cache[id]) return cache[id]
+    const id = parseInt(str, 3) + '-' + nums.join('-')
+    if (cache.hasOwnProperty(id)) return cache[id]
 
-    const aggr = rec({str: str1.join(''), nums}) + rec({str: str2.join(''), nums})
+    const aggr = rec(str1, nums) + rec(str2, nums)
     cache[id] = aggr
     return aggr
   }
 
   rows.forEach((row, i) => {
-    let index = `0000${i}`
+    let index = `    ${i}`
     index = index.substring(index.length - 4, index.length)
     console.time(index)
-    const solution = rec({str: row.field, nums: row.nums})
-    console.log(index, solution, row.field)
+    const solution = rec(row.field, row.nums)
     answer += solution
     console.timeEnd(index)
   })
 
-  console.log('answer', answer, {test: answer === 525152})
+  console.log('cache size', Object.keys(cache).length)
+
+  console.log('answer', answer, {'test 1': answer === 21}, {'prod 1': answer === 7204}, {'test 2': answer === 525152}, {'prod 2': answer === 1672318386674})
 
   console.timeEnd('duration')
 })
