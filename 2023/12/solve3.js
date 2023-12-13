@@ -78,13 +78,17 @@ readInput().then(async data => {
     return aggr
   }
 
-  rows.slice(0, 10).forEach(row => {
+  rows.forEach((row, i) => {
+    let index = `0000${i}`
+    index = index.substring(index.length - 4, index.length)
+    console.time(index)
     const solution = rec({str: row.field, nums: row.nums})
-    console.log(solution, row.field)
+    console.log(index, solution, row.field)
     answer += solution
+    console.timeEnd(index)
   })
 
-  console.log('answer', answer, [1, 16384, 1, 16, 2500, 506250], 525152, answer === 525152)
+  console.log('answer', answer, {test: answer === 525152})
 
   console.timeEnd('duration')
 })
