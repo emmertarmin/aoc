@@ -99,7 +99,6 @@ readInput().then(async data => {
     const solution = rec(row.field, row.nums)
     answer += solution
     console.timeEnd(index)
-    console.log('cache size', Object.keys(cache).length)
     cache = {}
   })
 
