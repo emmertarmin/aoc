@@ -70,6 +70,10 @@ readInput().then(async data => {
     if (!str.includes('2')) { // stop condition
       return check(str, nums) ? 1 : 0
     }
+    
+
+    const id = parseInt(str, 3) + '-' + nums.join('-')
+    if (cache.hasOwnProperty(id)) return cache[id]
 
     const i = str.indexOf('2')
     let str1 = str.split('')
@@ -82,10 +86,6 @@ readInput().then(async data => {
     let str2 = str.split('')
     str2.splice(i, 1, '1')
     str2 = str2.join('')
-    
-
-    const id = parseInt(str, 3) + '-' + nums.join('-')
-    if (cache.hasOwnProperty(id)) return cache[id]
 
     const aggr = rec(str1, nums) + rec(str2, nums)
     cache[id] = aggr
