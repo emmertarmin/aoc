@@ -70,7 +70,7 @@ readInput().then(async data => {
     if (!str.includes('2')) { // stop condition
       return check(str, nums) ? 1 : 0
     }
-    
+
 
     const id = parseInt(str, 3) + '-' + nums.join('-')
     if (cache.hasOwnProperty(id)) return cache[id]
@@ -95,10 +95,10 @@ readInput().then(async data => {
   rows.forEach((row, i) => {
     let index = `    ${i}`
     index = index.substring(index.length - 4, index.length)
-    console.time(index)
+    // console.time(index)
     const solution = rec(row.field, row.nums)
     answer += solution
-    console.timeEnd(index)
+    // console.timeEnd(index)
     cache = {}
   })
 
