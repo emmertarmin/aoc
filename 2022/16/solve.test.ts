@@ -102,7 +102,7 @@ async function solve(lines: string[]) {
 describe(`day ${day} test`, async () => {
 	const lines = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 
-	test.only('answer 1', async () => {
+	test('answer 1', async () => {
 		expect(await solve(lines)).toBe(1651);
 	})
 
