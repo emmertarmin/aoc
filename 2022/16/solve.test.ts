@@ -28,75 +28,125 @@ async function solve(lines: string[]) {
 
 	// console.log(valves)
 
-	const activeValves = {...valves}
-	Object.keys(valves).forEach(v => {
-		if (valves[v].rate === 0) {
-			Object.keys(activeValves).forEach(t => {
-				delete activeValves[t].tunnels[v]
-			})
-			delete activeValves[v]
-		}
-	})
+	if (!await Bun.file('./activeValves.json').exists()) {
 
-	// calculate shortest path between each active valve
-	Object.keys(activeValves).forEach(b => {
-		Object.keys(activeValves).forEach(e => {
-			if (b === e) return
-			if (activeValves[b].tunnels[e]) return
-			const queue = Object.keys(activeValves).filter(t => t !== b)
-			const visited = new Map<string, number>()
-			let depth = 0
-			while (queue.length > 0) {
-				const curr = queue.shift()
-				depth++
-				if (visited.has(curr) && visited.get(curr) <= depth) continue
-				visited.set(curr, depth)
-				if (activeValves[curr].tunnels[e]) {
-					activeValves[b].tunnels[e] = depth
-					break
+		const activeValves = JSON.parse(JSON.stringify(valves))
+
+		// console.log(activeValves)
+
+		// calculate shortest path between each active valve
+		Object.keys(activeValves).forEach((b, count) => {
+			console.log('calculating', b, count + 1, '/', Object.keys(activeValves).length)
+			Object.keys(activeValves).forEach(e => {
+				if (b === e) {
+					return
 				}
-				Object.keys(valves[curr].tunnels)
-					.filter(t => t !== b)
-					.forEach(t => queue.push(t))
-			}
-			activeValves[b].tunnels[e] = visited.get(e)
+				if (activeValves[b].tunnels[e]) {
+					// console.log('already connected', b, e)
+					return
+				}
+				function search(curr: string, visited: string[]) {
+					// stop condition
+					if (curr === e) {
+						return visited.length
+					}
+					return Math.min(
+						...Object.keys(valves[curr].tunnels)
+							.filter(t => !visited.includes(t))
+							.map(t => search(t, [...visited, t]))
+					)
+				}
+
+				const min = search(b, [])
+				activeValves[b].tunnels[e] = min
+			})
 		})
-	})
+
+		Object.keys(activeValves).forEach(v => {
+			Object.keys(activeValves[v].tunnels).forEach(t => {
+				if (valves[t].rate === 0) delete activeValves[v].tunnels[t]
+			})
+		})
+
+		await Bun.write('./activeValves.json', JSON.stringify(activeValves, null, 2))
+	}
+
+	const activeValves = JSON.parse(await Bun.file('./activeValves.json').text()) as {[key: string]: {tunnels: {[key: string]: number}}}
 
 	console.log(activeValves)
 
 	const maxDepth = 30
 
-	const cache = new Map<string, number>()
+	let cache = Object.create(null) as {[key: string]: number}
 
-	const calcFlow = (vOrder: {[key: string]: number}) => {
-		const key = Object.keys(vOrder).sort().map(k => `${k[0]}:${vOrder[k]}`).join(',')
-		if (cache.has(key)) return cache.get(key)
-		const res = Object.keys(vOrder).reduce((acc, curr) => acc + valves[curr].rate * (maxDepth - vOrder[curr]), 0)
-		cache.set(key, res)
-		if (cache.size % 1000 === 0) console.log(cache.size)
-		return res
+	let runningMax = 0
+
+	const start = Bun.nanoseconds()
+
+	const pad = (s: string | number, l: number) => {
+		s = s.toString()
+		while (s.length < l) s = ' ' + s
+		return s
 	}
 
+	const calcFlow = (vOrder: {[key: string]: number}) => {
+		// const key = Bun.hash(JSON.stringify(vOrder))
+		const key = JSON.stringify(vOrder).replace(/[^A-Z\d]/g, '')
+		// const key = Object.keys(vOrder).map(k => `${k[0]}${vOrder[k]}`).join('')
+		return cache[key] || (() => {
+			const res = Object.keys(vOrder).reduce((acc, curr) => acc + valves[curr].rate * (maxDepth - vOrder[curr]), 0)
+			cache[key] = res
+			if (res > runningMax) runningMax = res
+			// if (cache.size % 10 === 0) {
+			// console.log(
+			// 	Object.keys(cache).length,
+			// 	pad(res, 5),
+			// 	pad(runningMax, 5),
+			// 	((Bun.nanoseconds() - start)/1e9/60).toFixed(2) + 'm',
+			// 	pad(key, 30)
+			// )
+			// }
+			return res
+		})()
+	}
+
+	const visitable = Object.keys(activeValves).filter(i => valves[i].rate !== 0).length
+
 	function search(depth: number, v: string, vOrder: {[key: string]: number}) {
+		// console.log('search', depth, v, vOrder)
 		if (depth >= maxDepth) {
 			const res = calcFlow(vOrder)
 			// console.log('max depth reached', res)
 			return res
 		}
-		if (Object.keys(valves).filter(i => valves[i].rate !== 0).every(i => Object.keys(vOrder).includes(i))) {
+		if (Object.keys(cache).length > 2000) return runningMax
+		if (Object.keys(vOrder).length === visitable) {
 			const res = calcFlow(vOrder)
-			console.log('all valves are open', res)
+			// console.log('all visited', res)
 			return res
 		}
-		const options = valves[v].tunnels.map(t => search(depth+1, t, vOrder))
-		if (!vOrder[v] && valves[v].rate !== 0) {
-			return Math.max(search(depth+1, v, {...vOrder, [v]: depth+1}), ...options)
+		if (!vOrder[v] && valves[v].rate !== 0){
+			return Math.max(
+				search(depth+1, v, {...vOrder, [v]: depth+1}),
+				...Object.keys(activeValves[v].tunnels)
+					.filter(t => !Object.keys(vOrder).includes(t))
+					// .toSorted((a, b) => valves[b].rate - valves[a].rate)
+					.filter(t => depth+activeValves[v].tunnels[t] < maxDepth - 0)
+					.map(t => search(depth+activeValves[v].tunnels[t], t, vOrder))
+			) // open valve, or move to next valve
 		}
-		return Math.max(...options)
+		return Math.max(
+			...Object.keys(activeValves[v].tunnels)
+				.filter(t => !Object.keys(vOrder).includes(t))
+				// .toSorted((a, b) => valves[b].rate - valves[a].rate)
+				.filter(t => depth+activeValves[v].tunnels[t] < maxDepth - 0)
+				.map(t => search(depth+activeValves[v].tunnels[t], t, vOrder))
+		) // move to next valve
 	}
 
-	return search(0, 'AA', {})
+	return Math.max(...Object.keys(activeValves).map(v => {cache = Object.create(null); return search(1, v, {})}))
+
+	// return search(1, 'LW', {})
 }
 
 describe(`day ${day} test`, async () => {
