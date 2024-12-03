@@ -26,7 +26,7 @@ export async function readFileLineByLine(filePath, onLineRead, onFinish = () => 
 }
 
 export async function getLines(path: string) {
-	const lines: any[] = []
+	const lines: string[] = []
 
 	const onLineRead = (line: string) => {
 		line = line.trim();
