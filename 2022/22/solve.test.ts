@@ -14,7 +14,7 @@ describe(`day ${day}`, async () => {
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
   describe('part 1 test', async () => {
-    test.only('answer', async () => {
+    test('answer', async () => {
       const answer = await solve(linesTest)
       expect(answer).toBe(-1);
     })
