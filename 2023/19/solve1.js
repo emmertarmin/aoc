@@ -35,7 +35,7 @@ readInput().then(async data => {
       rules[name] = rule
     }
   }
-  // console.log(parts.slice(0, 5), Object.keys(rules).slice(0, 5).map(k => ({name: k, rules: rules[k]})))
+  console.log({parts, rules})
 
   /* solve task */
   console.time('duration')
