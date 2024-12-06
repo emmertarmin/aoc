@@ -24,14 +24,13 @@ rl
         times.forEach((time, i) => {
             answer.push(0)
             const record = dists[i]
-            
+
             for (let t = 0; t < time; t++) {
                 const dist = (time - t) * t
                 // console.log(t, dist)
                 if (dist > record) answer[answer.length - 1] += 1
             }
         })
-
 
         console.log('part 1', answer.reduce((acc, curr) => acc*curr, 1))
     })

@@ -10,8 +10,6 @@ let instructions = []
 let nodes = new Map()
 const lkkt = [20093, 12169, 13301, 20659, 16697, 17263] // lcm: 10668805667831
 
-
-
 rl
     .on('line', (line) => {
         if (line.match(/^[LR]+$/)) {
@@ -24,7 +22,6 @@ rl
             const [_, name, left, right] = Array.from(line.match(/([0-9A-Z]+) = \(([0-9A-Z]+), ([0-9A-Z]+)\)/))
             nodes.set(name, {L: left, R: right, name: name, z: name.endsWith('Z')})
         }
-
 
         // const [hand, bid] = Array.from(line.matchAll(/([AKQJT0-9]+) (\d+)/g)).map(i => [i[1].split(''), Number(i[2])])[0]
 

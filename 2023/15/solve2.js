@@ -80,7 +80,6 @@ readInput().then(async data => {
     })
   })
 
-
   console.log('answer', answer, 48314)
 
   console.timeEnd('duration')

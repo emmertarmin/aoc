@@ -113,5 +113,4 @@ describe(`day ${day}`, async () => {
 		expect(await solve(1, 10000)).toBe(21553910156);
 	})
 
-
 })

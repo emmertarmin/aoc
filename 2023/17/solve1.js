@@ -69,8 +69,6 @@ readInput().then(async data => {
   const start = {x: 0, y: 0}
   const end = {x: grid[0].length - 1, y: grid.length - 1}
 
-
-
   const open = [{x: start.x, y: start.y, parent: null, data: {'up': {cost: 0}, 'down': {cost: 0}, 'left': {cost: 0}, 'right': {cost: 0}}}]
   const closed = []
   let counter = 0
@@ -78,7 +76,6 @@ readInput().then(async data => {
   while (open.length > 0) {
     open.sort((a, b) => a.cost - b.cost)
     const current = open.shift()
-
 
     grid[current.y][current.x].visited = true
     if (grid[current.y][current.x].cost >= 0 && grid[current.y][current.x].cost < current.cost) {console.log('this happened'); continue}
@@ -90,7 +87,6 @@ readInput().then(async data => {
     for (const neighbour of neighbours) {
       // skip conditions
       if (open.find(i => i.x === neighbour.x && i.y === neighbour.y && i.cost < neighbour.cost)) continue
-
 
       // add to open
       open.push(neighbour)

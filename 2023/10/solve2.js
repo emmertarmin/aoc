@@ -44,7 +44,6 @@ getStuff().then(async data => {
   let dir = 1
   let prev = start
 
-
   while (queue.length > 0) {
     const points = queue.shift()
     let arr = []

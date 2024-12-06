@@ -37,7 +37,6 @@ async function solve(lines: string[], includeTrappedAir = false) {
 	const str2v = (str: string) => [str].map(s => s.split(',').map(Number)).map(([x, y, z]) => ({x, y, z}))[0]
 	const v2str = (v: V3) => `${v.x},${v.y},${v.z}`
 
-
 	let drops: V3[] = set2v(dropSet)
 
 	if (includeTrappedAir) {

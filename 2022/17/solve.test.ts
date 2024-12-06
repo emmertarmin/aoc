@@ -53,7 +53,6 @@ async function solve(lines: string[], iterations: number) {
 		return a.some(point => solids[point.x + ',' + point.y] || false)
 	}
 
-
 	const rocks = rocksGenerator()
 	const winds = windGenerator()
 

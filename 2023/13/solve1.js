@@ -33,7 +33,7 @@ readInput().then(async data => {
   }
 
   /* solve task */
-  
+
   console.time('duration')
 
   function findSymmetry(rows) {
@@ -49,7 +49,7 @@ readInput().then(async data => {
   }
 
   let answer = 0
-  
+
   for (const m of maps) {
     const rows = m.map(row => parseInt(row.reduce((acc, curr) => `${acc}${curr}`, ''), 2))
     const cols = m[0].map((col, i) => parseInt(m.reduce((acc, curr) => `${acc}${curr[i]}`, ''), 2))
@@ -73,7 +73,7 @@ readInput().then(async data => {
     // }
 
   }
-  
+
   console.log('answer', answer, 24401)
 
   console.timeEnd('duration')

@@ -30,7 +30,7 @@ readInput().then(async data => {
   /* solve task */
   space = expand(space)
   draw(space, 'value')
-  
+
   const nodes = []
 
   space.forEach((row, x) => {

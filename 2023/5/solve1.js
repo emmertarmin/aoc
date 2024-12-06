@@ -24,7 +24,7 @@ rl
         const [ , dest, src, len] = (Array.from(line.matchAll(/(\d+) (\d+) (\d+)/g))[0] || []).map(i => Number(i))
         if (typeof dest === 'undefined') return
         if (stages.length === 0) return
-        
+
         const last = stages.length - 1
 
         stages[last].data.push({src, dest, len})
@@ -33,9 +33,8 @@ rl
         stages.forEach((stage, i) => {
             stages[i].data = stage.data.sort((a, b) => (a.src - b.src))
         })
-        
-        
-        
+
+
         // console.log(stages[2].data)
         // for (let i = 0; i < 110; i++) {
         //     const map = stages[2].data.find(m => m.src <= i && (m.src + m.len) > i)
@@ -44,8 +43,6 @@ rl
         // }
         // return
 
-
-        
         locs = seeds.map(seed => {
             let n = seed
             // console.log('')

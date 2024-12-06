@@ -27,9 +27,9 @@ const genString = (arr) => {
 
 const checkString = (str1, str2) => {
   if (str1.length !== str2.length) throw `string lengths don\'t match: ${str1.length} vs. ${str2.length}`
-  
+
   let match = true
-  
+
   for (let i = 0; i < str1.length; i++) {
     if (str1[i] === '#' && str2[i] === '.') match = false
     if (str2[i] === '#' && str1[i] !== '#') match = false
@@ -39,7 +39,6 @@ const checkString = (str1, str2) => {
 }
 
 const sum = (arr) => arr.reduce((acc, curr) => acc + curr, 0)
-
 
 /* Can't use `await` outside of an async function so you need to chain with then() */
 readInput().then(async data => {
@@ -92,7 +91,7 @@ readInput().then(async data => {
     answer += debug
     console.log(debug, row.field)
   })
-  
+
     console.log('answer', answer)
 
   console.timeEnd('duration')

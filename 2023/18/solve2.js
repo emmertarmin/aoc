@@ -105,7 +105,6 @@ readInput().then(async data => {
     trace.push({x: next.x, y: next.y, dir: next.dir})
   })
 
-
   const minX = Math.min(...trace.map(i => i.x))
   const maxX = Math.max(...trace.map(i => i.x))
   const minY = Math.min(...trace.map(i => i.y))

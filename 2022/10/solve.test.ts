@@ -32,7 +32,6 @@ describe(`day ${day}`, async () => {
 			}
 		}
 
-
 		return sum
 	}
 

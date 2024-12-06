@@ -22,7 +22,6 @@ rl
             nodes.set(name, {L: left, R: right, name: name, z: name.endsWith('Z')})
         }
 
-
         // const [hand, bid] = Array.from(line.matchAll(/([AKQJT0-9]+) (\d+)/g)).map(i => [i[1].split(''), Number(i[2])])[0]
 
     })

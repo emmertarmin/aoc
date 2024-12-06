@@ -54,7 +54,6 @@ console.log(line.split(''))
   console.log('visited_a', visited_a.size)
   console.log('visited_b', visited_b.size)
 
-
   console.timeEnd('duration')
 })
 

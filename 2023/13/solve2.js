@@ -33,7 +33,7 @@ readInput().then(async data => {
   }
 
   /* solve task */
-  
+
   console.time('duration')
 
   const bitCount = (n) => n.toString(2).match(/1/g)?.length || 0
@@ -54,7 +54,7 @@ readInput().then(async data => {
   }
 
   let answer = 0
-  
+
   for (const m of maps) {
     const rows = m.map(row => parseInt(row.reduce((acc, curr) => `${acc}${curr}`, ''), 2))
     const cols = m[0].map((col, i) => parseInt(m.reduce((acc, curr) => `${acc}${curr[i]}`, ''), 2))
@@ -78,7 +78,7 @@ readInput().then(async data => {
     // }
 
   }
-  
+
   console.log('answer', answer, 33735)
 
   console.timeEnd('duration')

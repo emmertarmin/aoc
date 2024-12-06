@@ -121,7 +121,6 @@ readInput().then(async data => {
       }
     }
 
-
     let nb = getNeighbours(grid, x, y).find(i => i.dir === toRight)
     grid[y][x].current = true
     while (!grid[nb.y][nb.x].visited) {

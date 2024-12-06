@@ -31,7 +31,7 @@ readInput().then(async data => {
   const [eRows, eCols] = expand(space)
   console.log([eRows, eCols])
   draw(space, 'value')
-  
+
   const nodes = []
 
   space.forEach((row, x) => {

@@ -71,7 +71,6 @@ readInput().then(async data => {
       return check(str, nums) ? 1 : 0
     }
 
-
     const id = parseInt(str, 3) + '-' + nums.join('-')
     if (cache.hasOwnProperty(id)) return cache[id]
 
@@ -101,7 +100,6 @@ readInput().then(async data => {
     // console.timeEnd(index)
     cache = {}
   })
-
 
   console.log('answer', answer, {'test 1': answer === 21}, {'prod 1': answer === 7204}, {'test 2': answer === 525152}, {'prod 2': answer === 1672318386674})
 

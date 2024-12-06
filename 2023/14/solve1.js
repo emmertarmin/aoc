@@ -36,7 +36,6 @@ const getNeighbour = (grid, x, y, dir) => {
   return null
 }
 
-
 let grid = []
 
 /* Can't use `await` outside of an async function so you need to chain with then() */
