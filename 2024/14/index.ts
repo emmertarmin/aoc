@@ -77,6 +77,11 @@ describe(`AoC`, async () => {
 
 	describe('PART 2', async () => {
 		test('PROD', async () => {
+			/**
+			 * I noticed that ticks = 1 and ticks = 104 leads to a visible pattern.
+			 * Setting ticks = 1 and increasing it by 103 each time, it only took
+			 * 74 iterations to find the tick count where the message is "readable".
+			 */
 			const answer = await solve(linesProd, [101, 103], 7623)
 			expect(answer).toBe(59640840)
 		})
