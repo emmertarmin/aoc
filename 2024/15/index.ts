@@ -3,116 +3,36 @@
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
-type Cell = '#' | '.' | 'O'
-type Cell2 = '#' | '.' | '[' | ']'
+type Cell = '#' | '.' | 'O' | '@' | '[' | ']'
 type V = { x: number, y: number }
 
-async function solve(lines: string[]) {
+async function solve(lines: string[], part2 = false) {
 	let sum = 0
-	const grid: Cell[][] = []
-	const robot = { x: 0, y: 0 }
-	let ctl = ''
-
-	let y = 0
-	for (const line of lines) {
-		/**
-		 * robot and grid
-		 */
-		if (line.includes('@')) {
-			robot.x = line.indexOf('@')
-			robot.y = y
-		}
-		if (line.includes('#')) {
-			grid.push(line.replace('@', '.').split('') as Cell[])
-		}
-		y++
-
-		/**
-		 * control sequence
-		 */
-		if (line.match(/[\^>v<]/)) {
-			ctl += line
-		}
-	}
-
-	for (const c of ctl) {
-		const move = {
-			'^': { x: 0, y: -1 },
-			'>': { x: 1, y: 0 },
-			'v': { x: 0, y: 1 },
-			'<': { x: -1, y: 0 }
-		}[c]
-
-		const check = structuredClone(robot)
-		let canMove = false
-		let empty = { x: undefined, y: undefined }
-		let isBox = false
-		while (true) {
-			check.x += move.x
-			check.y += move.y
-			if (grid[check.y][check.x] === '#') {
-				break
-			}
-			if (grid[check.y][check.x] === 'O') {
-				isBox = true
-				continue
-			}
-			if (grid[check.y][check.x] === '.') {
-				canMove = true
-				empty = { x: check.x, y: check.y }
-				break
-			}
-			throw new Error('unexpected')
-		}
-		if (canMove) {
-			if (isBox) {
-				grid[empty.y][empty.x] = 'O'
-			}
-			grid[robot.y][robot.x] = '.'
-			robot.x += move.x
-			robot.y += move.y
-		}
-		grid[robot.y][robot.x] = '.'
-	}
-
-	// console.log(grid.map((row, y) => row.map((col, x) => robot.x === x && robot.y === y ? col : col).join('').replace(/\./g, ' ')).join('\n'))
-
-	grid.forEach((row, y) => {
-		row.forEach((col, x) => {
-			if (col === 'O') {
-				sum += 100 * y + x
-			}
-		})
-	})
-
-	return sum
-}
-
-async function solveB(lines: string[]) {
-	let sum = 0
-	const grid: Cell2[][] = []
+	let grid: Cell[][] = []
 	const robot = { x: 0, y: 0 }
 	let ctl = ''
 
 	let y = 0
 	for (let line of lines) {
-		line = line
-			.replace(/#/g, '##')
-			.replace(/O/g, '[]')
-			.replace(/\./g, '..')
-			.replace(/@/g, '@.')
+		if (part2) {
+			line = line
+				.replace(/#/g, '##')
+				.replace(/O/g, '[]')
+				.replace(/\./g, '..')
+				.replace(/@/g, '@.')
+		}
 
 		/**
 		 * robot and grid
 		 */
-		if (line.includes('@')) {
-			robot.x = line.indexOf('@')
-			robot.y = y
-		}
 		if (line.includes('#')) {
-			grid.push(line.split('') as Cell2[])
+			if (line.includes('@')) {
+				robot.x = line.indexOf('@')
+				robot.y = y
+			}
+			grid.push(line.replace('@', '.').split('') as Cell[])
+			y++
 		}
-		y++
 
 		/**
 		 * control sequence
@@ -130,20 +50,59 @@ async function solveB(lines: string[]) {
 			'<': { x: -1, y: 0 }
 		}[c]
 
-		const res = structuredClone(grid)
-		
-		function rec(arr, V) {
+		const tempGrid = structuredClone(grid)
 
+		function rec(arr: { x: number, y: number, val: Cell, prev: Cell }[], v: V): boolean {
+			// early exit condition
+			if (arr.length === 0) {
+				return true
+			}
+			if (arr.some(({ x, y }) => grid[y + v.y][x + v.x] === '#')) {
+				return false
+			}
+
+
+			const nextMap = new Map<string, { val: Cell, prev: Cell }>()
+			arr.forEach(({ x, y, val, prev }) => {
+				tempGrid[y + v.y][x + v.x] = val
+				tempGrid[y][x] = prev
+				const nextVal = grid[y + v.y][x + v.x]
+				nextMap.set(`${x + v.x},${y + v.y}`, { val: nextVal, prev: val })
+			})
+
+			if (Math.abs(v.y) === 1) {
+				// moving vertically
+				nextMap.forEach((value, key) => {
+					const [x, y] = key.split(',').map(Number)
+					if (value.val === '[' && !nextMap.has(`${x + 1},${y}`)) {
+						nextMap.set(`${x + 1},${y}`, { val: ']', prev: '.' })
+					}
+					if (value.val === ']' && !nextMap.has(`${x - 1},${y}`)) {
+						nextMap.set(`${x - 1},${y}`, { val: '[', prev: '.' })
+					}
+				})
+			}
+
+			const nextArr = [...nextMap.entries()].map(([key, { val, prev }]) => {
+				const [x, y] = key.split(',').map(Number)
+				return { x, y, val, prev }
+			})
+
+			return rec(nextArr.filter(({ val }) => ['O', '[', ']'].includes(val)), v)
 		}
 
-		const canMove = rec([robot], move)
-	}
+		let canMove = rec([{ ...structuredClone(robot), val: '@', prev: '.' }], move)
 
-	// console.log(grid.map((row, y) => row.map((col, x) => robot.x === x && robot.y === y ? col : col).join('').replace(/\./g, ' ')).join('\n'))
+		if (canMove) {
+			robot.x += move.x
+			robot.y += move.y
+			grid = structuredClone(tempGrid)
+		}
+	}
 
 	grid.forEach((row, y) => {
 		row.forEach((col, x) => {
-			if (col === 'O') {
+			if (['[', 'O'].includes(col)) {
 				sum += 100 * y + x
 			}
 		})
@@ -175,14 +134,14 @@ describe(`AoC`, async () => {
 	})
 
 	describe('PART 2', async () => {
-		test.only('TEST', async () => {
-			const answer = await solveB(linesTest2)
+		test('TEST', async () => {
+			const answer = await solve(linesTest2, true)
 			expect(answer).toBe(9021)
 		})
 
 		test('PROD', async () => {
-			const answer = await solveB(linesProd)
-			expect(answer).toBe(0)
+			const answer = await solve(linesProd, true)
+			expect(answer).toBe(1432781)
 		})
 	})
 })
