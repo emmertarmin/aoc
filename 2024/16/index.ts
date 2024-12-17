@@ -4,25 +4,31 @@ import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
 type V = { x: number, y: number }
-type Cell = V & { g: number, h: number, debug?: any, parents: string[] | null }
+type Node = V & { dx: number, dy: number }
+type Cell = Node & { g: number, h: number, parents: Node[] | null }
+
+let begin = Date.now()
+function log(...args: any[]) {
+	const now = Date.now()
+	console.log(`${now - begin}ms:`, ...args)
+	begin = now
+}
 
 async function solve(lines: string[], part2 = false) {
 	const grid: string[][] = []
 	const start = { x: undefined, y: undefined }
 	const end = { x: undefined, y: undefined }
 
-	let y = 0
 	for (const line of lines) {
 		if (line.includes('S')) {
 			start.x = line.indexOf('S')
-			start.y = y
+			start.y = grid.length
 		}
 		if (line.includes('E')) {
 			end.x = line.indexOf('E')
-			end.y = y
+			end.y = grid.length
 		}
 		grid.push(line.split(''))
-		y++
 	}
 
 	function isOutOfBounds(v: V) {
@@ -33,27 +39,64 @@ async function solve(lines: string[], part2 = false) {
 		return grid[v.y][v.x] === '#'
 	}
 
-	const openQueue: Cell[] = [{ x: start.x, y: start.y, g: 0, h: 0, parents: [`${start.x - 1},${start.y}`] }]
-	const closedQueue: Cell[] = []
+	// const cells = new Map<string, Cell>()
 
-	while (openQueue.length > 0) {
-		const current = openQueue.shift()
-		closedQueue.push(current)
+	function findPath(startNode: Node, endNode: V) {
+		// const openQueue: Cell[] = [
+		// 	{
+		// 		x: startNode.x,
+		// 		y: startNode.y,
+		// 		dx: startNode.dx,
+		// 		dy: startNode.dy,
+		// 		g: 0,
+		// 		h: 0,
+		// 		parents: [{
+		// 			x: startNode.x - startNode.dx,
+		// 			y: startNode.y - startNode.dy,
+		// 			dx: startNode.dx,
+		// 			dy: startNode.dy
+		// 		}]
+		// 	}
+		// ]
+		// const closedQueue: Cell[] = []
 
-		if (current.x === end.x && current.y === end.y) {
-			console.log('DONE')
-			break
-		}
+		const openQueue = new Map<string, Cell>()
+		const closedQueue = new Map<string, Cell>()
+		openQueue.set(`${startNode.x},${startNode.y},${startNode.dx},${startNode.dy}`, {
+			x: startNode.x,
+			y: startNode.y,
+			dx: startNode.dx,
+			dy: startNode.dy,
+			g: 0,
+			h: 0,
+			parents: [{
+				x: startNode.x - startNode.dx,
+				y: startNode.y - startNode.dy,
+				dx: startNode.dx,
+				dy: startNode.dy
+			}]
+		})
 
-		current.parents.forEach((parent) => {
-			const [px, py] = parent.split(',').map(Number)
+		const maxLen = grid.length * grid[0].length * 4
 
-			const dir = { x: current.x - px, y: current.y - py }
+		while (openQueue.size > 0) {
+			if (closedQueue.size > maxLen) {
+				throw new Error('Max length reached')
+				break
+			}
+			const current = Array.from(openQueue.values()).sort((a, b) => a.g + a.h - b.g - b.h)[0]
+			openQueue.delete(`${current.x},${current.y},${current.dx},${current.dy}`)
+			closedQueue.set(`${current.x},${current.y},${current.dx},${current.dy}`, current)
+
+			// if (current.x === endNode.x && current.y === endNode.y) {
+			// 	// DONE
+			// 	break
+			// }
 
 			const neighbors = [
-				{ x: current.x + dir.x, y: current.y + dir.y, cost: 1 },
-				{ x: current.x - dir.y, y: current.y + dir.x, cost: 1001 },
-				{ x: current.x + dir.y, y: current.y - dir.x, cost: 1001 }
+				{ x: current.x + current.dx, y: current.y + current.dy, dx: current.dx, dy: current.dy, cost: 1 },
+				{ x: current.x, y: current.y, dx: current.dy, dy: -1 * current.dx, cost: 1000 },
+				{ x: current.x, y: current.y, dx: -1 * current.dy, dy: current.dx, cost: 1000 }
 			]
 
 			for (const neighbor of neighbors) {
@@ -62,53 +105,61 @@ async function solve(lines: string[], part2 = false) {
 				}
 
 				const g = current.g + neighbor.cost
-				let h = Math.abs(neighbor.x - end.x) + Math.abs(neighbor.y - end.y)
-				if (neighbor.x !== end.x) { h += 1000 }
-				if (neighbor.y !== end.y) { h += 1000 }
+				let h = Math.abs(neighbor.x - endNode.x) + Math.abs(neighbor.y - endNode.y)
 
-				const existing = openQueue.find((cell) => cell.x === neighbor.x && cell.y === neighbor.y)
+				const existing = closedQueue.get(`${neighbor.x},${neighbor.y},${neighbor.dx},${neighbor.dy}`)
 				if (existing) {
 					if (g < existing.g) {
 						existing.g = g
 						existing.h = h
 					}
-					// if (g === existing.g && !existing.parents.includes(`${current.x},${current.y}`)) {
-					// 	existing.parents.push(`${current.x},${current.y}`)
-					// 	console.log('PUSH', g, existing.parents)
-					// }
+					if (g === existing.g) {
+						existing.parents.push({ x: current.x, y: current.y, dx: current.dx, dy: current.dy })
+					}
 				} else {
-					const cell = { x: neighbor.x, y: neighbor.y, g, h, parents: [`${current.x},${current.y}`] }
-					openQueue.push(cell)
+					const cell = {
+						x: neighbor.x,
+						y: neighbor.y,
+						dx: neighbor.dx,
+						dy: neighbor.dy,
+						g,
+						h,
+						parents: [{ x: current.x, y: current.y, dx: current.dx, dy: current.dy }]
+					}
+					openQueue.set(`${neighbor.x},${neighbor.y},${neighbor.dx},${neighbor.dy}`, cell)
 				}
 			}
+		}
 
-			openQueue.sort((a, b) => a.g + a.h - b.g - b.h)
+		return Array.from(closedQueue.values())
+	}
+
+	const cells = findPath({ ...start, dx: 1, dy: 0 }, { ...end})
+
+	const minCost = cells
+		.filter((cell) => cell.x === end.x && cell.y === end.y)
+		.map((cell) => cell.g)
+		.reduce((acc, g) => Math.min(acc, g), Infinity)
+
+	if (!part2) {
+		return minCost
+	}
+
+	const onPath = new Set<string>()
+
+	const queue = cells.filter((cell) => cell.x === end.x && cell.y === end.y && cell.g === minCost)
+	while (queue.length > 0) {
+		const current = queue.shift()
+		const key = `${current.x},${current.y}`
+		onPath.add(key)
+		current.parents.forEach((parent) => {
+			if (parent.x && parent.y) {
+				queue.push(cells.find((cell) => cell.x === parent.x && cell.y === parent.y && cell.dx === parent.dx && cell.dy === parent.dy))
+			}
 		})
 	}
 
-	if (part2) {
-		let sum = 0
-	// 	function rec({x, y}: V, h: number): number[][] {
-	// 		const nb = [[-1, 0], [0, 1], [1, 0], [0, -1]]
-	// 			.map(([dy, dx]) => [y + dy, x + dx])
-	// 			.filter(([ny, nx]) => !isOutOfBounds({x: nx, y: ny}))
-	// 			.filter(([ny, nx]) => grid[ny][nx] !== '#')
-
-	// 		if (x === end.x && y === end.y) {
-	// 			return nb.filter(([ny, nx]) => grid[ny][nx] === 'E')
-	// 		}
-
-	// 		return nb.reduce((acc, [ny, nx]) => [...acc, ...rec({x: nx, y: ny}, h + 1)], [])
-	// 	}
-
-	// 	[start].forEach(({x, y}) => {
-	// 		sum += rec({x, y}, 0).length
-	// 	})
-
-		return sum
-	}
-
-	return closedQueue.find((cell) => cell.x === end.x && cell.y === end.y).g
+	return onPath.size
 }
 
 describe(`AoC`, async () => {
@@ -127,7 +178,7 @@ describe(`AoC`, async () => {
 			expect(answer).toBe(11048)
 		})
 
-		test('PROD', async () => {
+		test.only('PROD', async () => {
 			const answer = await solve(linesProd)
 			expect(answer).toBe(135512)
 		})
@@ -140,14 +191,14 @@ describe(`AoC`, async () => {
 		})
 
 
-		test('TEST 2', async () => {
+		test.only('TEST 2', async () => {
 			const answer = await solve(linesTest2, true)
 			expect(answer).toBe(64)
 		})
 
-		test('PROD', async () => {
+		test.only('PROD', async () => {
 			const answer = await solve(linesProd, true)
-			expect(answer).toBe(0)
+			expect(answer).toBe(541)
 		})
 	})
 })
