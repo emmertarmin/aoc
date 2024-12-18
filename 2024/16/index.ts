@@ -42,24 +42,6 @@ async function solve(lines: string[], part2 = false) {
 	// const cells = new Map<string, Cell>()
 
 	function findPath(startNode: Node, endNode: V) {
-		// const openQueue: Cell[] = [
-		// 	{
-		// 		x: startNode.x,
-		// 		y: startNode.y,
-		// 		dx: startNode.dx,
-		// 		dy: startNode.dy,
-		// 		g: 0,
-		// 		h: 0,
-		// 		parents: [{
-		// 			x: startNode.x - startNode.dx,
-		// 			y: startNode.y - startNode.dy,
-		// 			dx: startNode.dx,
-		// 			dy: startNode.dy
-		// 		}]
-		// 	}
-		// ]
-		// const closedQueue: Cell[] = []
-
 		const openQueue = new Map<string, Cell>()
 		const closedQueue = new Map<string, Cell>()
 		openQueue.set(`${startNode.x},${startNode.y},${startNode.dx},${startNode.dy}`, {
