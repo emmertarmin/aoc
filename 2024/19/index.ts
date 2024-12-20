@@ -4,67 +4,49 @@ import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
 async function solve(lines: string[], part2 = false) {
-	let sum = 0
-
-	// const cache = new Map<string, number>()
+	const cache = new Map<string, number>()
 
 	let availables
 	const patterns: string[] = []
 
 	for (const line of lines) {
 		if (line.includes(',')) {
-			// line.split(', ').forEach((n) => availables.add(n))
 			availables = new Set<string>(line.split(', '))
 		} else {
 			patterns.push(line)
 		}
 	}
 
-	// console.log({ availables: Array.from(availables.values()).toSorted((a: string, b: string) => a.length - b.length), patterns })
-
-	function depth(arr) {
-		if (Array.isArray(arr)) {
-			return 1 + Math.max(...arr.map(depth))
+	function rec(prefix: string, pattern: string) {
+		if (cache.has(pattern)) {
+			return cache.get(pattern)
 		}
-		return 0
-	}
 
-	function rec(pattern: string) {
-		// if (cache.has(pattern)) {
-			// return cache.get(pattern) as string[]
-		// }
-
-		// base case
 		if (pattern.length === 0) {
-			return ['']
+			return 1
 		}
 
-		return Array.from(availables.values()).filter((a: string) => pattern.startsWith(a)).map((a: string) => {
-			const nextPattern = pattern.slice(a.length) || ''
-			// console.log(a, nextPattern)
-			if (!nextPattern) {
-				return [a]
-			}
-			const result = rec(nextPattern).map((t) => [a, ...t])
-			if (result[0].every(r => !Array.isArray(r))) {
-				console.log('is not array', result)
-			}
-			return result
-		})
+		const result = Array.from(availables.values())
+			.filter((a: string) => pattern.startsWith(a))
+			.map((a: string) => {
+				const rest = pattern.slice(a.length)
+				return rec(prefix + ' ' + a, rest)
+			})
+			.reduce((acc, curr) => acc + curr, 0)
+		cache.set(pattern, result)
+		return result
 	}
 
-	let i = 0
+	const solutions = []
 	for (const pattern of patterns) {
-		const towels = rec(pattern)
-		console.log({ pattern, towels })
-		console.log({depth: towels.map(depth)})
-		// console.log({r: towels.map(r)})
-		i++
-		if (i > 3) { break }
+		solutions.push(rec('', pattern))
 	}
 
+	if (!part2) {
+		return solutions.filter((s) => s > 0).length
+	}
 
-	return 0
+	return solutions.reduce((acc, curr) => acc + curr, 0)
 }
 
 describe(`AoC`, async () => {
@@ -72,7 +54,7 @@ describe(`AoC`, async () => {
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
 	describe('PART 1', async () => {
-		test.only('TEST', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest)
 			expect(answer).toBe(6)
 		})
@@ -92,7 +74,7 @@ describe(`AoC`, async () => {
 
 		test('PROD', async () => {
 			const answer = await solve(linesProd, true)
-			expect(answer).toBe(0)
+			expect(answer).toBe(1041529704688380)
 		})
 	})
 })
