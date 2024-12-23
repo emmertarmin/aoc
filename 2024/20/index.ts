@@ -6,28 +6,29 @@ import { getLines } from '@/io'
 type V = { x: number, y: number }
 type Cell = V & { g: number, h: number, parent: V | null }
 
-async function solve(lines: string[], size: V, amount: number, part2 = false) {
-	let sum = 0
-
-	const start: V = { x: 0, y: 0 }
-	const end: V = { x: size.x, y: size.y }
-	const grid = Array.from({ length: size.y + 1 }, () => Array.from({ length: size.x + 1 }, () => 0))
-
-	const bytes: V[] = []
+async function solve(lines: string[], maxRange = 2, cutoff = 100) {
+	const grid: string[][] = []
+	const start: V = { x: null, y: null }
+	const end: V = { x: null, y: null }
 
 	for (const line of lines) {
-		const { x, y } = line.match(/(?<x>\d+),(?<y>\d+)/)!.groups!
-		bytes.push({ x: +x, y: +y })
+		if (line.includes('S')) {
+			start.x = line.indexOf('S')
+			start.y = grid.length
+		}
+		if (line.includes('E')) {
+			end.x = line.indexOf('E')
+			end.y = grid.length
+		}
+		grid.push(line.split(''))
 	}
-
-	bytes.slice(0, amount).forEach(({ x, y }) => grid[y][x] = 1)
 
 	function isOutOfBounds(v: V) {
 		return v.x < 0 || v.y < 0 || v.x >= grid[0].length || v.y >= grid.length
 	}
 
 	function isWall(v: V) {
-		return grid[v.y][v.x] === 1
+		return grid[v.y][v.x] === '#'
 	}
 
 	function findPath(startNode: V, endNode: V) {
@@ -53,13 +54,11 @@ async function solve(lines: string[], size: V, amount: number, part2 = false) {
 				break
 			}
 
-			const neighbors = [[0, -1], [1, 0], [0, 1], [-1, 0]].map(([x, y]) => ({ x: current.x + x, y: current.y + y }))
+			const neighbors = [[0, -1], [1, 0], [0, 1], [-1, 0]]
+				.map(([x, y]) => ({ x: current.x + x, y: current.y + y }))
+				.filter(nb => !isOutOfBounds(nb) && !isWall(nb))
 
 			for (const nb of neighbors) {
-				if (isOutOfBounds(nb) || isWall(nb)) {
-					continue
-				}
-
 				const g = current.g + 1
 				let h = Math.abs(nb.x - endNode.x) + Math.abs(nb.y - endNode.y)
 
@@ -89,33 +88,50 @@ async function solve(lines: string[], size: V, amount: number, part2 = false) {
 			curr = closedQueue.get(`${curr.parent.x},${curr.parent.y}`)
 		}
 
+		path.push(start)
+
 		return {
+			// path: path.toReversed(),
 			path,
 			foundPath
 		}
 	}
 
-	if (!part2) {
-		const { path } = findPath(start, end)
-		return path.length
+	const { path } = findPath(start, end)
+
+	const solutions = {}
+
+	for (let range = 2; range <= maxRange; range++) {
+		for (let n = 0; n < path.length; n++) {
+			const cheatDests = new Set<string>()
+			const p = path[n]
+			for (let y = p.y - range; y <= p.y + range; y++) {
+				for (let x = p.x - range; x <= p.x + range; x++) {
+					if ((Math.abs(x - p.x) + Math.abs(y - p.y) !== range)) {
+						continue
+					}
+					cheatDests.add(`${x},${y}`)
+				}
+			}
+			// find closest along the path to End
+			for (let m = path.length - 1; m > n; m--) {
+				const p2 = path[m]
+				if (cheatDests.has(`${p2.x},${p2.y}`)) {
+					const newPathLen = n + (path.length - 1 - m) + range + 1
+					const savings = path.length - newPathLen
+					if (savings < cutoff) {
+						continue
+					}
+					solutions[savings] = (solutions[savings] || 0) + 1
+				}
+			}
+		}
 	}
 
-	// Part 2
-	let currentPath = new Set<string>()
-	for (const {x, y} of bytes.slice(amount)) {
-		grid[y][x] = 1
+	const sum = Object.keys(solutions)
+		.reduce((acc, curr) => acc + solutions[curr], 0)
 
-		// optimization: we don't need to recompute path if falling byte isn't blocking it
-		if (currentPath.size > 0 && !currentPath.has(`${x},${y}`)) {
-			continue
-		}
-		const {foundPath, path} = findPath(start, end)
-		path.forEach(({x, y}) => currentPath.add(`${x},${y}`))
-
-		if (!foundPath) {
-			return `${x},${y}`
-		}
-	}
+	return sum
 }
 
 describe(`AoC`, async () => {
@@ -124,25 +140,26 @@ describe(`AoC`, async () => {
 
 	describe('PART 1', async () => {
 		test('TEST', async () => {
-			const answer = await solve(linesTest, { x: 6, y: 6 }, 12)
-			expect(answer).toBe(22)
+			const answer = await solve(linesTest, 2, 1)
+			expect(answer).toBe(44)
 		})
 
 		test('PROD', async () => {
-			const answer = await solve(linesProd, { x: 70, y: 70 }, 1024)
-			expect(answer).toBe(292)
+			const answer = await solve(linesProd, 2, 100)
+			expect(answer).toBeLessThan(4223)
+			expect(answer).toBe(1381)
 		})
 	})
 
 	describe('PART 2', async () => {
 		test('TEST', async () => {
-			const answer = await solve(linesTest, { x: 6, y: 6 }, 12, true)
-			expect(answer).toBe('6,1')
+			const answer = await solve(linesTest, 20, 50)
+			expect(answer).toBe(285)
 		})
 
 		test('PROD', async () => {
-			const answer = await solve(linesProd, { x: 70, y: 70 }, 1024, true)
-			expect(answer).toBe('58,44')
+			const answer = await solve(linesProd, 20, 100)
+			expect(answer).toBe(982124)
 		})
 	})
 })
