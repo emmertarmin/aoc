@@ -92,12 +92,12 @@ describe(`AoC`, async () => {
 	})
 
 	describe('PART 2', async () => {
-		test.only('TEST', async () => {
+		test('TEST', async () => {
 			const answer = await solveB(linesTest)
 			expect(answer).toBe(2858)
 		})
 
-		test.only('PROD', async () => {
+		test('PROD', async () => {
 			const answer = await solveB(linesProd)
 			expect(answer).toBeLessThan(6600118448330)
 			expect(answer).toBe(6547228115826)

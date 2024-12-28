@@ -40,29 +40,29 @@ describe(`AoC`, async () => {
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
 	describe('PART 1', async () => {
-		test.only('TEST', async () => {
+		test('TEST', async () => {
 			const answer = await solve(['0 1 10 99 999'], 1)
 			expect(answer).toBe(7)
 		})
 
-		test.only('TEST', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest, 6)
 			expect(answer).toBe(22)
 		})
 
-		test.only('TEST', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest, 25)
 			expect(answer).toBe(55312)
 		})
 
-		test.only('PROD', async () => {
+		test('PROD', async () => {
 			const answer = await solve(linesProd, 25)
 			expect(answer).toBe(218956)
 		})
 	})
 
 	describe('PART 2', async () => {
-		test.only('PROD', async () => {
+		test('PROD', async () => {
 			const answer = await solve(linesProd, 75)
 			expect(answer).toBe(259593838049805)
 		},)
