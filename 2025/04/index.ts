@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
-type Cell = '@' | '.' | 'x'
+type Cell = '@' | '.'
 
 function draw(grid: Cell[][]) {
 	for (const row of grid) {
@@ -39,11 +39,11 @@ function gridSum(grid: Cell[][], value: Cell) {
 	return sum
 }
 
-async function solve(lines: string[], iter = false) {
+async function solve(lines: Cell[], iter = false) {
 	const grid: Cell[][] = []
 
 	for (const line of lines) {
-		grid.push(line.split(''))
+		grid.push(line.split('') as Cell[])
 	}
 
 	// draw(grid)
@@ -80,8 +80,8 @@ async function solve(lines: string[], iter = false) {
 }
 
 describe(`AoC`, async () => {
-	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
-	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
+	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as Cell[]
+	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as Cell[]
 
 	describe('PART 1', async () => {
 		test('TEST', async () => {
