@@ -101,7 +101,7 @@ describe(`AoC`, async () => {
 
 		test('PROD', async () => {
 			const answer = await solveB(linesProd)
-			expect(answer).toBe(0)
+			expect(answer).toBe(344813017450467)
 		})
 	})
 })
