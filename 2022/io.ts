@@ -29,7 +29,7 @@ export async function getLines(path: string) {
 	const lines: any[] = []
 
 	const onLineRead = (line: string) => {
-		line = line.trim();
+		// line = line.trim();
 		if (line.length > 0) lines.push(line);
 	}
 

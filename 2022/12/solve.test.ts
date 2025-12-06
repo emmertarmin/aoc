@@ -19,6 +19,7 @@ describe(`day ${day}`, async () => {
 		let end: Point = {x: 0, y: 0}
 
 		for (let y = 0; y < lines.length; y++) {
+      console.log(lines)
 			const line = lines[y]
 			grid.push(line.split(''))
 			if (line.includes('E')) {

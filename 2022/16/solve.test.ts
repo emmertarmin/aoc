@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { getLines, readFileLineByLine } from '@/io'
+import { getLines } from '@/io'
 
 const day = '16'
 
@@ -28,7 +28,7 @@ async function solve(lines: string[]) {
 
 	// console.log(valves)
 
-	if (!await Bun.file('./activeValves.json').exists()) {
+	// if (!await Bun.file('./activeValves.json').exists()) {
 
 		const activeValves = JSON.parse(JSON.stringify(valves))
 
@@ -68,26 +68,18 @@ async function solve(lines: string[]) {
 			})
 		})
 
-		await Bun.write('./activeValves.json', JSON.stringify(activeValves, null, 2))
-	}
+	// 	await Bun.write('./activeValves.json', JSON.stringify(activeValves, null, 2))
+	// }
 
-	const activeValves = JSON.parse(await Bun.file('./activeValves.json').text()) as {[key: string]: {tunnels: {[key: string]: number}}}
+	// const activeValves = JSON.parse(await Bun.file('./activeValves.json').text()) as {[key: string]: {tunnels: {[key: string]: number}}}
 
-	console.log(activeValves)
+	// console.log(activeValves)
 
 	const maxDepth = 30
 
 	let cache = Object.create(null) as {[key: string]: number}
 
 	let runningMax = 0
-
-	const start = Bun.nanoseconds()
-
-	const pad = (s: string | number, l: number) => {
-		s = s.toString()
-		while (s.length < l) s = ' ' + s
-		return s
-	}
 
 	const calcFlow = (vOrder: {[key: string]: number}) => {
 		// const key = Bun.hash(JSON.stringify(vOrder))
