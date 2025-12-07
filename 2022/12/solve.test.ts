@@ -19,7 +19,7 @@ describe(`day ${day}`, async () => {
 		let end: Point = {x: 0, y: 0}
 
 		for (let y = 0; y < lines.length; y++) {
-      console.log(lines)
+      // console.log(lines)
 			const line = lines[y]
 			grid.push(line.split(''))
 			if (line.includes('E')) {
@@ -88,7 +88,7 @@ describe(`day ${day}`, async () => {
 					solution.push(c)
 					c = c.parent
 				}
-				console.log('found', solution.length)
+				// console.log('found', solution.length)
 				// print(solution)
 				return solution.length
 			}
