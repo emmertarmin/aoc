@@ -144,18 +144,18 @@ async function solve(lines: string[], part2 = false) {
 	return onPath.size
 }
 
-describe(`AoC`, async () => {
+describe('2024/16', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesTest2 = await getLines(`${import.meta.dir}/test2.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
 	describe('PART 1', async () => {
-		test('TEST 1', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest)
 			expect(answer).toBe(7036)
 		})
 
-		test('TEST 2', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest2)
 			expect(answer).toBe(11048)
 		})
@@ -167,13 +167,13 @@ describe(`AoC`, async () => {
 	})
 
 	describe('PART 2', async () => {
-		test('TEST 1', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest, true)
 			expect(answer).toBe(45)
 		})
 
 
-		test('TEST 2', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest2, true)
 			expect(answer).toBe(64)
 		})

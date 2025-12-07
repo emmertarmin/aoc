@@ -31,7 +31,7 @@ async function solve(lines: string[], ops: string[] = ['*', '+']) {
 		.filter(eq => rec(eq))
 		.reduce((acc, { res }) => acc + res, 0)
 }
-describe(`AoC`, async () => {
+describe('2024/07', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

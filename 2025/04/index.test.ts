@@ -79,7 +79,7 @@ async function solve(lines: Cell[], iter = false) {
 	return sum
 }
 
-describe(`AoC`, async () => {
+describe(`2025/04`, async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as Cell[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as Cell[]
 

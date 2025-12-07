@@ -111,18 +111,18 @@ async function solve(lines: string[], part2 = false) {
 	return sum
 }
 
-describe(`AoC`, async () => {
+describe('2024/15', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesTest2 = await getLines(`${import.meta.dir}/test2.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
 	describe('PART 1', async () => {
-		test('TEST 1', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest)
 			expect(answer).toBe(2028)
 		})
 
-		test('TEST 2', async () => {
+		test('TEST', async () => {
 			const answer = await solve(linesTest2)
 			expect(answer).toBe(10092)
 		})

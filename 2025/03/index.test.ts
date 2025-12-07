@@ -22,7 +22,7 @@ async function solve(lines: string[], digits = 2) {
 	return sum
 }
 
-describe(`AoC`, async () => {
+describe(`2025/03`, async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

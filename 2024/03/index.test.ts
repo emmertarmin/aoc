@@ -1,8 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
-const day = '01'
-
 async function solve(lines: string[], dodont = false) {
 	let doo = 1
 	let sum = 0
@@ -29,33 +27,33 @@ async function solve(lines: string[], dodont = false) {
 	return sum
 }
 
-describe(`day ${day} test`, async () => {
-	const lines = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+describe('2024/03', async () => {
+	const linesTest1 = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+	const linesTest2 = await getLines(`${import.meta.dir}/test2.txt`) as string[]
+	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
-	test('answer 1', async () => {
-		const answer = await solve(lines)
-		expect(answer).toBe(161);
+	describe('PART 1', async () => {
+		test('TEST', async () => {
+			const answer = await solve(linesTest1)
+			expect(answer).toBe(161)
+		})
+
+		test('PROD', async () => {
+			const answer = await solve(linesProd)
+			expect(answer).toBe(179571322)
+		})
 	})
 
-	const lines2 = await getLines(`${import.meta.dir}/test2.txt`) as string[]
+	describe('PART 2', async () => {
+		test('TEST', async () => {
+			const answer = await solve(linesTest2, true)
+			expect(answer).toBe(48)
+		})
 
-	test('answer 2', async () => {
-		const answer = await solve(lines2, true)
-		expect(answer).toBe(48);
-	})
-})
-
-describe(`day ${day} prod`, async () => {
-	const lines = await getLines(`${import.meta.dir}/input.txt`) as string[]
-
-	test('answer 1', async () => {
-		const answer = await solve(lines)
-		expect(answer).toBe(179571322);
-	})
-
-	test('answer 2', async () => {
-		const answer = await solve(lines, true)
-		expect(answer).toBeLessThan(105264641)
-		expect(answer).toBe(103811193)
+		test('PROD', async () => {
+			const answer = await solve(linesProd, true)
+			expect(answer).toBeLessThan(105264641)
+			expect(answer).toBe(103811193)
+		})
 	})
 })

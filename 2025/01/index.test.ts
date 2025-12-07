@@ -21,7 +21,7 @@ async function solve(lines: string[], countTraversals = false) {
 	return counter
 }
 
-describe(`AoC`, async () => {
+describe(`2025/01`, async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

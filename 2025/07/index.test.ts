@@ -81,7 +81,7 @@ async function solveB(lines: string[]) {
 	return rec(levels[1], levels[0], 0, '')
 }
 
-describe(`AoC`, async () => {
+describe(`2025/07`, async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

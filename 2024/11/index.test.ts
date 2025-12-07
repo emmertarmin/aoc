@@ -35,7 +35,7 @@ async function solve(lines: string[], blinks: number) {
 
 console.log(await solve(['0'], 3))
 
-describe(`AoC`, async () => {
+describe('2024/11', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

@@ -54,7 +54,7 @@ async function solve(lines: string[], gridSize: [number, number] = [101, 103], t
 	return quadrants.reduce((acc, q) => acc * q, 1)
 }
 
-describe(`AoC`, async () => {
+describe('2024/14', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

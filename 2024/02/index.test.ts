@@ -1,8 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
-const day = '01'
-
 function reportIsSafe(report, faultTolerance = 0) {
 	const reportOptions = report.map((_, i) => {
 		let opt = [...report]
@@ -43,28 +41,29 @@ async function solve(lines: string[], faultTolerance = 0) {
 	return sum
 }
 
-describe(`day ${day} test`, async () => {
-	const lines = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+describe('2024/02', async () => {
+	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
-	test('answer 1', async () => {
-		expect(await solve(lines)).toBe(2);
+	describe('PART 1', async () => {
+		test('TEST', async () => {
+			expect(await solve(linesTest)).toBe(2)
+		})
+
+		test('PROD', async () => {
+			const answer = await solve(linesProd)
+			expect(answer).toBe(332)
+		})
 	})
 
-	test('answer 2', async () => {
-		expect(await solve(lines, 1)).toBe(4);
-	})
-})
+	describe('PART 2', async () => {
+		test('TEST', async () => {
+			expect(await solve(linesTest, 1)).toBe(4)
+		})
 
-describe(`day ${day} prod`, async () => {
-	const lines = await getLines(`${import.meta.dir}/input.txt`) as string[]
-
-	test('answer 1', async () => {
-		const answer = await solve(lines)
-		expect(answer).toBe(332);
-	})
-
-	test('answer 2', async () => {
-		const answer = await solve(lines, 1)
-		expect(answer).toBe(398);
+		test('PROD', async () => {
+			const answer = await solve(linesProd, 1)
+			expect(answer).toBe(398)
+		})
 	})
 })

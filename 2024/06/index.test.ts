@@ -84,7 +84,7 @@ async function solveB(lines: string[]) {
 	return sum
 }
 
-describe(`AoC`, async () => {
+describe('2024/06', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

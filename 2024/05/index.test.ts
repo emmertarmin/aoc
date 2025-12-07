@@ -107,30 +107,31 @@ async function solveB(lines: string[]) {
 	return sum
 }
 
-describe(`TEST`, async () => {
-	const lines = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+describe('2024/05', async () => {
+	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
+	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
-	test('answer 1', async () => {
-		const answer = await solve(lines)
-		expect(answer).toBe(143);
+	describe('PART 1', async () => {
+		test('TEST', async () => {
+			const answer = await solve(linesTest)
+			expect(answer).toBe(143)
+		})
+
+		test('PROD', async () => {
+			const answer = await solve(linesProd)
+			expect(answer).toBe(5208)
+		})
 	})
 
-	test('answer 2', async () => {
-		const answer = await solveB(lines)
-		expect(answer).toBe(123);
-	})
-})
+	describe('PART 2', async () => {
+		test('TEST', async () => {
+			const answer = await solveB(linesTest)
+			expect(answer).toBe(123)
+		})
 
-describe(`PROD`, async () => {
-	const lines = await getLines(`${import.meta.dir}/input.txt`) as string[]
-
-	test('answer 1', async () => {
-		const answer = await solve(lines)
-		expect(answer).toBe(5208);
-	})
-
-	test('answer 2', async () => {
-		const answer = await solveB(lines)
-		expect(answer).toBe(6732);
+		test('PROD', async () => {
+			const answer = await solveB(linesProd)
+			expect(answer).toBe(6732)
+		})
 	})
 })

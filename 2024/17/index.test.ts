@@ -182,7 +182,7 @@ async function solveB(lines: string[]) {
 	// for (let i = 0; i < 16; i++) {
 	// 	console.log(test(8*8*8*8 + i).join(','), i)
 	// }
-	
+
 	let guard = 0
 	let digits = 2
 	let a = 1
@@ -216,7 +216,7 @@ async function solveB(lines: string[]) {
 	return a
 }
 
-describe(`AoC`, async () => {
+describe('2024/17', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 

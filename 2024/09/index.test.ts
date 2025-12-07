@@ -74,7 +74,7 @@ async function solveB(lines: string[]) {
 	return layout.reduce((acc, curr, i) => curr < 0 ? acc : acc + i * curr, 0)
 }
 
-describe(`AoC`, async () => {
+describe('2024/09', async () => {
 	const linesTest = await getLines(`${import.meta.dir}/test1.txt`) as string[]
 	const linesProd = await getLines(`${import.meta.dir}/input.txt`) as string[]
 
