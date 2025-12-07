@@ -1,5 +1,3 @@
-// bun test ./2024/template --watch
-
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '../../2024/io'
 

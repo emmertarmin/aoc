@@ -1,3 +1,4 @@
+// @ts-ignore: bun-test-ignore-file
 import { describe, expect, test } from 'bun:test'
 import { getLines } from '@/io'
 
